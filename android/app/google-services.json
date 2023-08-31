@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "42158838434",
+    "firebase_url": "https://menu-digital-2a39e-default-rtdb.firebaseio.com",
+    "project_id": "menu-digital-2a39e",
+    "storage_bucket": "menu-digital-2a39e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42158838434:android:9c8ecb125d01e59e0d3dfb",
+        "android_client_info": {
+          "package_name": "com.example.pos_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "42158838434-laaj9aluc3f8kr3eu1rlouur001df218.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6ncp6rtKkhcnoFpxPzOIQ9xUkhNBOZIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "42158838434-laaj9aluc3f8kr3eu1rlouur001df218.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
