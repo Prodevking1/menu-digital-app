@@ -28,7 +28,7 @@ class AppEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: ThemeData(),
-      home: /* const HomePage() */ HomePage(),
+      home: const HomePage() /* AddProductsToCategoryPage() */,
       debugShowCheckedModeBanner: false,
       initialBinding: BaseBinding(),
     );

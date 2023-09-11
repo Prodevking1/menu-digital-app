@@ -10,19 +10,22 @@ import 'package:vibration/vibration.dart';
 class OrderService {
   OrdersController ordersController = Get.find();
   DBHelper dbHelper = DBHelper();
+  final collectionRef = FirebaseFirestore.instance.collection('orders');
+  Timestamp? lastProcessedTimestamp;
 
   Stream<OrderModel> listenToNewOrders() {
     StreamController<OrderModel> streamController =
         StreamController<OrderModel>.broadcast();
 
+    if (lastProcessedTimestamp == null) {
+      lastProcessedTimestamp = Timestamp.now();
+    }
+
     CollectionReference ordersCollection =
         FirebaseFirestore.instance.collection('orders');
 
-    Timestamp initialTimestamp = Timestamp.now();
-    print(initialTimestamp);
-
     ordersCollection
-        .where('date', isGreaterThan: initialTimestamp)
+        .where('date', isGreaterThan: lastProcessedTimestamp)
         .snapshots()
         .listen((QuerySnapshot querySnapshot) {
       querySnapshot.docChanges.forEach((DocumentChange documentChange) {
@@ -31,9 +34,11 @@ class OrderService {
 
           OrderModel order = OrderModel.fromJson(
               documentSnapshot.data() as Map<String, dynamic>);
+          order.docRef = documentSnapshot.reference;
           ordersController.pendingOrders.add(order);
           streamController.add(order);
           Vibration.vibrate(duration: 1000, amplitude: 255);
+          lastProcessedTimestamp = order.date;
         }
       });
     });
@@ -42,21 +47,11 @@ class OrderService {
   }
 
   deleteAll() async {
-    final collectionRef = FirebaseFirestore.instance.collection('orders');
     final QuerySnapshot snapshot = await collectionRef.get();
 
     snapshot.docs.forEach((element) async {
       await element.reference.delete();
     });
-  }
-
-  void confirmAndSaveOrder(OrderModel order) {
-    try {
-      order.isValidated = true;
-      dbHelper.insertOrder(order);
-    } catch (e) {
-      print(e);
-    }
   }
 
   void cancelAndSaveOrder(OrderModel order) async {

@@ -84,6 +84,7 @@ class ItemModel {
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderModel {
+  DocumentReference? docRef;
   Timestamp? date;
   late bool isValidated;
   late int clientContact;
@@ -98,10 +99,12 @@ class OrderModel {
     required this.items,
     required this.table,
     required this.totalAmount,
+    this.docRef,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
+      docRef: json['docRef'] as DocumentReference?,
       date: json['date'] as Timestamp,
       isValidated: /* json['is_validated'] as bool */ false,
       clientContact: json['client_contact'],

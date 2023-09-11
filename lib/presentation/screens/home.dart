@@ -3,8 +3,9 @@ import 'package:get/get.dart';
 import 'package:pos_app/controllers/home_controller.dart';
 import 'package:pos_app/controllers/oders_controller.dart';
 import 'package:pos_app/models/order_model.dart';
+import 'package:pos_app/presentation/widgets/snackbar_widget.dart';
 
-import '../../services/service.dart';
+import '../../services/order_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -39,31 +40,11 @@ class _HomePageState extends State<HomePage> {
               if (snapshot.hasData) {
                 ordersController.addOrder(snapshot.data as OrderModel);
 
-                return Column(children: [
-                  _buildCurrentPendingOrderWidget(),
-                  _buildActionButtons(ordersController.pendingOrders.last),
-                ]);
+                return _buildCurrentPendingOrderWidget();
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 80,
-                        width: 80,
-                        child: CircularProgressIndicator(
-                          color: const Color(0xFFFFD700),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text('En attente de commandes'),
-                    ],
-                  ),
-                );
+                return _buildLoadingWidget();
               }
             },
           ),
@@ -74,9 +55,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCurrentPendingOrderWidget() {
     return Obx(() {
-      return ordersController.pendingOrders.isNotEmpty
-          ? Container(
-              height: 150,
+      if (ordersController.pendingOrders.isNotEmpty) {
+        OrderModel order = ordersController.pendingOrders.last;
+        return Column(
+          children: [
+            Container(
+              // height: 150,
               width: 330,
               decoration: BoxDecoration(
                 color: Colors.black,
@@ -87,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     Text(
-                      'Table ${ordersController.pendingOrders.last.table}',
+                      'Table ${order.table}',
                       style: TextStyle(
                         color: const Color(0xFFFFD700),
                         fontSize: 16,
@@ -96,8 +80,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount:
-                          ordersController.pendingOrders.last.items.length,
+                      itemCount: order.items.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(top: 15),
@@ -105,16 +88,15 @@ class _HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                ordersController.pendingOrders.last.items[index]
-                                    .productName,
+                                order.items[index].productName,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               Text(
-                                '${ordersController.pendingOrders.last.items[index].quantity}',
+                                '${order.items[index].quantity}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -129,8 +111,13 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-            )
-          : Center();
+            ),
+            _buildActionButtons(order),
+          ],
+        );
+      } else {
+        return _buildLoadingWidget();
+      }
     });
   }
 
@@ -161,27 +148,50 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Row(
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  orderService.confirmAndSaveOrder(order);
-                },
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.green,
-                ),
-                label: const Text(
-                  'Confirmer',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
+          Obx(() => ordersController.isLoading.value
+              ? CircularProgressIndicator()
+              : Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        ordersController.confirmOrder(order);
+                      },
+                      icon: const Icon(
+                        Icons.check,
+                        color: Colors.green,
+                      ),
+                      label: const Text(
+                        'Confirmer',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ))
+        ],
+      ),
+    );
+  }
+
+  _buildLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 80,
+            width: 80,
+            child: CircularProgressIndicator(
+              color: const Color(0xFFFFD700),
+            ),
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text('En attente de commandes'),
         ],
       ),
     );
