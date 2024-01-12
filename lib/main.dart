@@ -4,7 +4,6 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:pos_app/routes.dart';
 import 'package:pos_app/services/firebase_options.dart';
 import 'package:pos_app/presentation/screens/home.dart';
-import 'package:pos_app/presentation/screens/add_product_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {

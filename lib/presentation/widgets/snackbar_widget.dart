@@ -14,5 +14,5 @@ snackbarWidget({required order, required message, required color}) {
       messageText: Text(message ?? "",
           style: TextStyle(
               color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
-      duration: Duration(seconds: 3));
+      duration: Duration(seconds: 10));
 }

@@ -32,6 +32,8 @@ class OrderService {
         if (documentChange.type == DocumentChangeType.added) {
           DocumentSnapshot<Object?> documentSnapshot = documentChange.doc;
 
+          print(documentSnapshot.data());
+
           OrderModel order = OrderModel.fromJson(
               documentSnapshot.data() as Map<String, dynamic>);
           order.docRef = documentSnapshot.reference;
